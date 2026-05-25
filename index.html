@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Leaderboard 2026 — Top 20 AI Models Ranked</title>
+  <style>
+    :root {
+      --bg:         #0d1117;
+      --surface:    #161b22;
+      --surface2:   #21262d;
+      --border:     #30363d;
+      --text:       #e6edf3;
+      --muted:      #8b949e;
+      --accent:     #58a6ff;
+      --accent2:    #bc8cff;
+      --green:      #3fb950;
+      --yellow:     #d29922;
+      --red:        #f85149;
+      --orange:     #e3b341;
+      --teal:       #39d353;
+      --gold:       #ffd700;
+      --silver:     #c0c0c0;
+      --bronze:     #cd7f32;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 60%, #1a2332 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(88,166,255,.15);
+      border: 1px solid rgba(88,166,255,.35);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 800;
+      background: linear-gradient(90deg, #58a6ff, #bc8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .meta-row span { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Stat cards ─────────────────────────── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      max-width: 1300px;
+      margin: 28px auto 0;
+      padding: 0 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card .val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-card .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Section headers ─────────────────────── */
+    .section-header {
+      max-width: 1300px;
+      margin: 36px auto 0;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .section-header .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .section-divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Benchmark legend ────────────────────── */
+    .bench-legend {
+      max-width: 1300px;
+      margin: 16px auto 0;
+      padding: 0 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .bench-tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .bench-tag strong { color: var(--text); }
+
+    /* ── Table wrapper ───────────────────────── */
+    .table-wrap {
+      max-width: 1300px;
+      margin: 16px auto 0;
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr {
+      background: var(--surface2);
+      border-bottom: 2px solid var(--border);
+    }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:hover { background: rgba(88,166,255,.05); }
+    tbody td { padding: 11px 12px; vertical-align: middle; }
+    tbody td.center { text-align: center; }
+
+    /* ── Rank cell ────────────────────────────── */
+    .rank { font-weight: 700; font-size: 15px; color: var(--muted); }
+    .rank-1 { color: var(--gold); }
+    .rank-2 { color: var(--silver); }
+    .rank-3 { color: var(--bronze); }
+
+    /* ── Model name cell ─────────────────────── */
+    .model-name { font-weight: 600; color: var(--text); font-size: 14px; }
+    .model-name small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Provider badge ──────────────────────── */
+    .provider {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-openai   { background: #74aa9c; }
+    .dot-anthropic{ background: #c96442; }
+    .dot-google   { background: #4285f4; }
+    .dot-meta     { background: #0866ff; }
+    .dot-xai      { background: #aaaaaa; }
+    .dot-deepseek { background: #1a73e8; }
+    .dot-alibaba  { background: #ff6a00; }
+    .dot-mistral  { background: #f7931e; }
+    .dot-microsoft{ background: #00a4ef; }
+    .dot-moonshot { background: #7c3aed; }
+    .dot-zai      { background: #10b981; }
+
+    /* ── Type badge ──────────────────────────── */
+    .type-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: .04em;
+    }
+    .type-closed {
+      background: rgba(88,166,255,.12);
+      color: #58a6ff;
+      border: 1px solid rgba(88,166,255,.3);
+    }
+    .type-open {
+      background: rgba(63,185,80,.12);
+      color: #3fb950;
+      border: 1px solid rgba(63,185,80,.3);
+    }
+
+    /* ── Score cell ──────────────────────────── */
+    .score { font-weight: 600; text-align: center; font-size: 13px; }
+    .score-high   { color: #3fb950; }
+    .score-mid    { color: #d29922; }
+    .score-low    { color: #8b949e; }
+    .score-none   { color: var(--border); font-size: 11px; }
+    .score-top    { color: #ffd700; font-weight: 800; }
+
+    /* ── Context badge ───────────────────────── */
+    .ctx {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── Hosting ─────────────────────────────── */
+    .host { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Capability tags ─────────────────────── */
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── Notes / Summary ─────────────────────── */
+    .summary { font-size: 12px; color: var(--muted); max-width: 240px; line-height: 1.5; }
+
+    /* ── Benchmark info boxes ────────────────── */
+    .info-grid {
+      max-width: 1300px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .info-card h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .info-card p  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .info-card .leader {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .info-card .leader::before { content: "🏆"; }
+
+    /* ── Footer ──────────────────────────────── */
+    footer {
+      max-width: 1300px;
+      margin: 48px auto 0;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ──────────────────────────── */
+    @media (max-width: 768px) {
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+      .summary, .tags { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════ HEADER ════════════════════════════════ -->
+<header>
+  <div class="badge">🔬 Research Edition · May 2026</div>
+  <h1>LLM Leaderboard 2026</h1>
+  <p>Top 20 large language models ranked by benchmark performance — covering frontier closed APIs and open-weight models you can self-host.</p>
+  <div class="meta-row">
+    <span>📅 Updated: May 25, 2026</span>
+    <span>📊 20 Models Tracked</span>
+    <span>🧪 8 Benchmarks</span>
+    <span>⚡ Sorted by GPQA Diamond</span>
+  </div>
+</header>
+
+<!-- ════════════════════════════════ STAT CARDS ════════════════════════════ -->
+<div class="stats-strip">
+  <div class="stat-card">
+    <div class="val">94.3%</div>
+    <div class="lbl">Top GPQA Diamond<br><span style="color:#58a6ff">Gemini 3.1 Pro</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="val">97.3%</div>
+    <div class="lbl">Top MATH-500<br><span style="color:#58a6ff">DeepSeek R1</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="val">87.6%</div>
+    <div class="lbl">Top SWE-bench<br><span style="color:#58a6ff">Claude Opus 4.7</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="val">100%</div>
+    <div class="lbl">AIME 2025<br><span style="color:#58a6ff">Grok 4</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="val">10M</div>
+    <div class="lbl">Largest Context<br><span style="color:#3fb950">Llama 4 Scout</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="val">$0.02</div>
+    <div class="lbl">Cheapest / 1M tok<br><span style="color:#3fb950">Qwen3 0.8B</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ BENCHMARK LEGEND ══════════════════════ -->
+<div class="section-header" style="margin-top:32px;">
+  <h2>Benchmark Key</h2>
+  <div class="section-divider"></div>
+</div>
+<div class="bench-legend">
+  <div class="bench-tag"><strong>GPQA ◆</strong> — Graduate-level science Q&amp;A (Bio/Chem/Physics). PhD experts ≈ 65%.</div>
+  <div class="bench-tag"><strong>MMLU</strong> — 57-subject knowledge test. Mostly saturated ≥90% for frontier models.</div>
+  <div class="bench-tag"><strong>HumanEval</strong> — 164 Python coding problems. Pass@1 metric.</div>
+  <div class="bench-tag"><strong>MATH-500</strong> — Competition-level mathematics, AMC–AIME difficulty.</div>
+  <div class="bench-tag"><strong>SWE-bench</strong> — Real GitHub issues resolved end-to-end.</div>
+  <div class="bench-tag"><strong>GSM8K</strong> — Grade-school math word problems. Near-saturated at frontier.</div>
+  <div class="bench-tag"><strong>MT-Bench</strong> — Multi-turn instruction following (1–10 scale, GPT-4 judged).</div>
+  <div class="bench-tag"><strong>AIME 2025</strong> — Olympiad-level math. 30 hard problems, post-training-cutoff.</div>
+</div>
+
+<!-- ════════════════════════════════ MAIN TABLE ════════════════════════════ -->
+<div class="section-header">
+  <h2>🏆 Frontier &amp; Closed Models</h2>
+  <div class="pill">Hosted API</div>
+  <div class="section-divider"></div>
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th style="width:40px">#</th>
+      <th>Model</th>
+      <th>Provider</th>
+      <th class="center">Type</th>
+      <th class="center">GPQA ◆</th>
+      <th class="center">MMLU</th>
+      <th class="center">HumanEval</th>
+      <th class="center">MATH-500</th>
+      <th class="center">SWE-bench</th>
+      <th class="center">MT-Bench</th>
+      <th>Context</th>
+      <th>Capabilities</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- 1. Claude Opus 4.7 -->
+    <tr>
+      <td><span class="rank rank-1">1</span></td>
+      <td>
+        <div class="model-name">Claude Opus 4.7
+          <small>Released: Apr 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-anthropic"></span>Anthropic</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-top">94.2%</td>
+      <td class="score score-high">~92%</td>
+      <td class="score score-high">~92%</td>
+      <td class="score score-high">~91%</td>
+      <td class="score score-top">87.6%</td>
+      <td class="score score-high">9.4</td>
+      <td><span class="ctx">1M tokens</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Coding Agent</span>
+          <span class="tag">Long Context</span>
+          <span class="tag">Reasoning</span>
+          <span class="tag">Multimodal</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 2. Gemini 3.1 Pro -->
+    <tr>
+      <td><span class="rank rank-2">2</span></td>
+      <td>
+        <div class="model-name">Gemini 3.1 Pro
+          <small>Released: Mar 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-google"></span>Google DeepMind</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-top">94.3%</td>
+      <td class="score score-high">~90%</td>
+      <td class="score score-high">~88%</td>
+      <td class="score score-high">~88%</td>
+      <td class="score score-high">80.6%</td>
+      <td class="score score-high">9.3</td>
+      <td><span class="ctx">1M–2M</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Multimodal</span>
+          <span class="tag">Science</span>
+          <span class="tag">Long Context</span>
+          <span class="tag">Video</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 3. GPT-5.5 -->
+    <tr>
+      <td><span class="rank rank-3">3</span></td>
+      <td>
+        <div class="model-name">GPT-5.5
+          <small>Released: 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-openai"></span>OpenAI</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-top">~92%</td>
+      <td class="score score-high">~92%</td>
+      <td class="score score-high">~94%</td>
+      <td class="score score-high">~92%</td>
+      <td class="score score-high">~76%</td>
+      <td class="score score-top">9.5</td>
+      <td><span class="ctx">400K</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Best Composite</span>
+          <span class="tag">Agentic</span>
+          <span class="tag">Tool Use</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 4. o3-pro -->
+    <tr>
+      <td><span class="rank">4</span></td>
+      <td>
+        <div class="model-name">o3-pro
+          <small>Released: 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-openai"></span>OpenAI</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-high">87.4%</td>
+      <td class="score score-high">88.2%</td>
+      <td class="score score-high">91.2%</td>
+      <td class="score score-top">96.7%</td>
+      <td class="score score-high">60.1%</td>
+      <td class="score score-high">9.1</td>
+      <td><span class="ctx">200K</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Math Leader</span>
+          <span class="tag">Reasoning</span>
+          <span class="tag">GSM8K 99.1%</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 5. Grok 4 -->
+    <tr>
+      <td><span class="rank">5</span></td>
+      <td>
+        <div class="model-name">Grok 4
+          <small>Released: 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-xai"></span>xAI</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-high">~87.5%</td>
+      <td class="score score-high">~86%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-high">~83%</td>
+      <td class="score score-high">~75%</td>
+      <td class="score score-high">8.8</td>
+      <td><span class="ctx">2M tokens</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">AIME 100%</span>
+          <span class="tag">Real-time X</span>
+          <span class="tag">Long Doc</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 6. GPT-5.4 -->
+    <tr>
+      <td><span class="rank">6</span></td>
+      <td>
+        <div class="model-name">GPT-5.4
+          <small>Released: 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-openai"></span>OpenAI</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-mid">72.8%</td>
+      <td class="score score-high">91.8%</td>
+      <td class="score score-top">94.1%</td>
+      <td class="score score-high">90.2%</td>
+      <td class="score score-high">74.9%</td>
+      <td class="score score-top">9.5</td>
+      <td><span class="ctx">400K</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Code Leader</span>
+          <span class="tag">Structured Output</span>
+          <span class="tag">Broad Ecosystem</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 7. Gemini 2.5 Pro -->
+    <tr>
+      <td><span class="rank">7</span></td>
+      <td>
+        <div class="model-name">Gemini 2.5 Pro
+          <small>Released: May 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-google"></span>Google DeepMind</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-high">86.0%</td>
+      <td class="score score-high">~87%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-mid">~55%</td>
+      <td class="score score-high">9.0</td>
+      <td><span class="ctx">1M tokens</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Multimodal</span>
+          <span class="tag">Audio/Video</span>
+          <span class="tag">Cost Efficient</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 8. Claude Opus 4.6 -->
+    <tr>
+      <td><span class="rank">8</span></td>
+      <td>
+        <div class="model-name">Claude Opus 4.6
+          <small>Released: Feb 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-anthropic"></span>Anthropic</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-mid">74.2%</td>
+      <td class="score score-high">92.1%</td>
+      <td class="score score-high">92.4%</td>
+      <td class="score score-high">91.5%</td>
+      <td class="score score-high">74.0%</td>
+      <td class="score score-high">9.4</td>
+      <td><span class="ctx">1M tokens</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Research Synthesis</span>
+          <span class="tag">Deep Reasoning</span>
+          <span class="tag">1M Context</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 9. Claude Sonnet 4.6 -->
+    <tr>
+      <td><span class="rank">9</span></td>
+      <td>
+        <div class="model-name">Claude Sonnet 4.6
+          <small>Released: Feb 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-anthropic"></span>Anthropic</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed</span></td>
+      <td class="score score-mid">68.3%</td>
+      <td class="score score-high">89.7%</td>
+      <td class="score score-high">90.8%</td>
+      <td class="score score-high">86.4%</td>
+      <td class="score score-mid">54.7%</td>
+      <td class="score score-high">9.2</td>
+      <td><span class="ctx">200K</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">Balanced</span>
+          <span class="tag">Writing</span>
+          <span class="tag">Mid-range Cost</span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- 10. DeepSeek V4 -->
+    <tr>
+      <td><span class="rank">10</span></td>
+      <td>
+        <div class="model-name">DeepSeek V4
+          <small>Released: Feb 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-deepseek"></span>DeepSeek</span></td>
+      <td class="center"><span class="type-badge type-closed">Closed API</span></td>
+      <td class="score score-mid">65.2%</td>
+      <td class="score score-high">87.2%</td>
+      <td class="score score-high">88.7%</td>
+      <td class="score score-high">84.1%</td>
+      <td class="score score-mid">48.3%</td>
+      <td class="score score-high">8.9</td>
+      <td><span class="ctx">128K</span></td>
+      <td>
+        <div class="tags">
+          <span class="tag">$0.28/M tok</span>
+          <span class="tag">Best Value</span>
+          <span class="tag">Tool Use</span>
+        </div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- ════════════════════════════════ OPEN WEIGHT TABLE ═════════════════════ -->
+<div class="section-header" style="margin-top:32px;">
+  <h2>🔓 Open-Weight Models</h2>
+  <div class="pill">Self-hostable</div>
+  <div class="section-divider"></div>
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th style="width:40px">#</th>
+      <th>Model</th>
+      <th>Provider</th>
+      <th class="center">Params</th>
+      <th class="center">License</th>
+      <th class="center">GPQA ◆</th>
+      <th class="center">MMLU</th>
+      <th class="center">HumanEval</th>
+      <th class="center">MATH-500</th>
+      <th class="center">SWE-bench</th>
+      <th>Context</th>
+      <th>Best For</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- 11. Kimi K2.6 -->
+    <tr>
+      <td><span class="rank rank-1">11</span></td>
+      <td>
+        <div class="model-name">Kimi K2.6
+          <small>Released: 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-moonshot"></span>Moonshot AI</span></td>
+      <td class="center score score-mid">—</td>
+      <td class="center"><span class="type-badge type-open">Apache 2.0</span></td>
+      <td class="score score-top">90.5%</td>
+      <td class="score score-high">~86%</td>
+      <td class="score score-top">~94.5%</td>
+      <td class="score score-high">~90%</td>
+      <td class="score score-high">~77%</td>
+      <td><span class="ctx">—</span></td>
+      <td class="summary">Top open-weight model on GPQA. Best value at $0.95/M input. Strong coder.</td>
+    </tr>
+
+    <!-- 12. DeepSeek R1 -->
+    <tr>
+      <td><span class="rank rank-2">12</span></td>
+      <td>
+        <div class="model-name">DeepSeek R1
+          <small>Released: Jan 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-deepseek"></span>DeepSeek</span></td>
+      <td class="center score score-mid">671B MoE<br><small style="color:var(--muted);font-size:10px">37B active</small></td>
+      <td class="center"><span class="type-badge type-open">MIT</span></td>
+      <td class="score score-mid">~71%</td>
+      <td class="score score-high">~88%</td>
+      <td class="score score-high">~87%</td>
+      <td class="score score-top">97.3%</td>
+      <td class="score score-mid">~49%</td>
+      <td><span class="ctx">128K</span></td>
+      <td class="summary">MATH-500 leader. Specialised chain-of-thought reasoning. Fully MIT licensed.</td>
+    </tr>
+
+    <!-- 13. Qwen3 235B -->
+    <tr>
+      <td><span class="rank rank-3">13</span></td>
+      <td>
+        <div class="model-name">Qwen3 235B-A22B
+          <small>Released: Apr 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-alibaba"></span>Alibaba</span></td>
+      <td class="center score score-mid">235B MoE<br><small style="color:var(--muted);font-size:10px">22B active</small></td>
+      <td class="center"><span class="type-badge type-open">Apache 2.0</span></td>
+      <td class="score score-mid">77.2%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-high">~90%</td>
+      <td class="score score-mid">~45%</td>
+      <td><span class="ctx">128K</span></td>
+      <td class="summary">Top open-weight on GPQA &amp; AIME (85.7%). Apache 2.0, strong multilingual.</td>
+    </tr>
+
+    <!-- 14. GLM-5.1 -->
+    <tr>
+      <td><span class="rank">14</span></td>
+      <td>
+        <div class="model-name">GLM-5.1
+          <small>Released: Apr 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-zai"></span>Z.AI (Zhipu)</span></td>
+      <td class="center score score-mid">—</td>
+      <td class="center"><span class="type-badge type-open">MIT</span></td>
+      <td class="score score-mid">~77%</td>
+      <td class="score score-mid">~82%</td>
+      <td class="score score-high">~85%</td>
+      <td class="score score-mid">~80%</td>
+      <td class="score score-high">58.4%</td>
+      <td><span class="ctx">—</span></td>
+      <td class="summary">First open-weight model to top SWE-bench Pro. Excellent coding agent. MIT license.</td>
+    </tr>
+
+    <!-- 15. Gemma 4 26B -->
+    <tr>
+      <td><span class="rank">15</span></td>
+      <td>
+        <div class="model-name">Gemma 4 26B
+          <small>Released: 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-google"></span>Google</span></td>
+      <td class="center score score-mid">26B MoE<br><small style="color:var(--muted);font-size:10px">3.8B active</small></td>
+      <td class="center"><span class="type-badge type-open">Apache 2.0</span></td>
+      <td class="score score-mid">~73%</td>
+      <td class="score score-high">~84%</td>
+      <td class="score score-high">~82%</td>
+      <td class="score score-high">~86%</td>
+      <td class="score score-mid">~40%</td>
+      <td><span class="ctx">256K</span></td>
+      <td class="summary">Consumer GPU friendly — 85 t/s, 14 GB RAM. Best practical local model. Multimodal.</td>
+    </tr>
+
+    <!-- 16. Llama 4 Maverick -->
+    <tr>
+      <td><span class="rank">16</span></td>
+      <td>
+        <div class="model-name">Llama 4 Maverick
+          <small>Released: Apr 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-meta"></span>Meta</span></td>
+      <td class="center score score-mid">~400B MoE<br><small style="color:var(--muted);font-size:10px">17B active</small></td>
+      <td class="center"><span class="type-badge" style="background:rgba(8,102,255,.12);color:#0866ff;border:1px solid rgba(8,102,255,.3)">Llama Lic.</span></td>
+      <td class="score score-mid">58.3%</td>
+      <td class="score score-high">84.7%</td>
+      <td class="score score-high">82.1%</td>
+      <td class="score score-mid">78.4%</td>
+      <td class="score score-mid">42.6%</td>
+      <td><span class="ctx">1M tokens</span></td>
+      <td class="summary">Highest MMLU of open models (85.5%). Great integration with AWS/Azure/Bedrock.</td>
+    </tr>
+
+    <!-- 17. Qwen3 32B -->
+    <tr>
+      <td><span class="rank">17</span></td>
+      <td>
+        <div class="model-name">Qwen3 32B
+          <small>Released: Apr 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-alibaba"></span>Alibaba</span></td>
+      <td class="center score score-mid">32B Dense</td>
+      <td class="center"><span class="type-badge type-open">Apache 2.0</span></td>
+      <td class="score score-mid">61.2%</td>
+      <td class="score score-high">~83%</td>
+      <td class="score score-high">85.4%</td>
+      <td class="score score-mid">~80%</td>
+      <td class="score score-mid">44.7%</td>
+      <td><span class="ctx">128K</span></td>
+      <td class="summary">Best single-GPU dense model. Strong code &amp; math. Apache 2.0 commercial use.</td>
+    </tr>
+
+    <!-- 18. Llama 4 Scout -->
+    <tr>
+      <td><span class="rank">18</span></td>
+      <td>
+        <div class="model-name">Llama 4 Scout
+          <small>Released: Apr 2025</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-meta"></span>Meta</span></td>
+      <td class="center score score-mid">109B MoE<br><small style="color:var(--muted);font-size:10px">17B active</small></td>
+      <td class="center"><span class="type-badge" style="background:rgba(8,102,255,.12);color:#0866ff;border:1px solid rgba(8,102,255,.3)">Llama Lic.</span></td>
+      <td class="score score-low">~50%</td>
+      <td class="score score-mid">~79%</td>
+      <td class="score score-mid">~75%</td>
+      <td class="score score-mid">~72%</td>
+      <td class="score score-mid">~35%</td>
+      <td><span class="ctx">10M tokens</span></td>
+      <td class="summary">World-record context window (10M tokens). 2,600 t/s. Best for RAG over huge corpora.</td>
+    </tr>
+
+    <!-- 19. Mistral Large 3 -->
+    <tr>
+      <td><span class="rank">19</span></td>
+      <td>
+        <div class="model-name">Mistral Large 3
+          <small>Released: Jan 2026</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-mistral"></span>Mistral AI</span></td>
+      <td class="center score score-mid">123B</td>
+      <td class="center"><span class="type-badge type-open">Apache 2.0</span></td>
+      <td class="score score-low">~55%</td>
+      <td class="score score-mid">~83%</td>
+      <td class="score score-mid">~77%</td>
+      <td class="score score-mid">~75%</td>
+      <td class="score score-low">~35%</td>
+      <td><span class="ctx">128K</span></td>
+      <td class="summary">Europe's strongest open model. 80+ languages. Apache 2.0. Ideal for multilingual apps.</td>
+    </tr>
+
+    <!-- 20. Phi-4 -->
+    <tr>
+      <td><span class="rank">20</span></td>
+      <td>
+        <div class="model-name">Phi-4
+          <small>Released: Dec 2024</small>
+        </div>
+      </td>
+      <td><span class="provider"><span class="dot dot-microsoft"></span>Microsoft</span></td>
+      <td class="center score score-mid">14B</td>
+      <td class="center"><span class="type-badge type-open">MIT</span></td>
+      <td class="score score-low">44.2%</td>
+      <td class="score score-mid">76.8%</td>
+      <td class="score score-mid">78.2%</td>
+      <td class="score score-mid">72.8%</td>
+      <td class="score score-low">36.8%</td>
+      <td><span class="ctx">16K</span></td>
+      <td class="summary">Punches far above its weight at 14B. Beats larger models on math. Ideal for edge/local.</td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- ════════════════════════════════ BENCHMARK EXPLAINERS ══════════════════ -->
+<div class="section-header" style="margin-top:40px;">
+  <h2>📖 Benchmark Explainers</h2>
+  <div class="section-divider"></div>
+</div>
+
+<div class="info-grid">
+  <div class="info-card">
+    <h4>GPQA Diamond</h4>
+    <p>448 graduate-level multiple-choice questions in biology, chemistry, and physics. Designed to be impossible to answer by web search alone. PhD specialists score ~65%, making this a true test of deep reasoning. Now the primary discriminator between frontier models.</p>
+    <div class="leader">Claude Opus 4.7 — 94.2% &nbsp;|&nbsp; Gemini 3.1 Pro — 94.3%</div>
+  </div>
+  <div class="info-card">
+    <h4>MATH-500</h4>
+    <p>A curated 500-problem subset of the MATH dataset featuring competition-level mathematics from AMC, AIME and above. Tests multi-step symbolic reasoning, not pattern matching. Reasoning models using chain-of-thought score significantly higher.</p>
+    <div class="leader">DeepSeek R1 — 97.3% &nbsp;|&nbsp; o3-pro — 96.7%</div>
+  </div>
+  <div class="info-card">
+    <h4>SWE-bench Verified</h4>
+    <p>500 real GitHub issues from popular Python repositories that the model must resolve end-to-end by writing patches that pass the existing test suite. The closest benchmark to production software engineering. Highly resistant to training-data contamination.</p>
+    <div class="leader">Claude Opus 4.7 — 87.6% &nbsp;|&nbsp; Gemini 3.1 Pro — 80.6%</div>
+  </div>
+  <div class="info-card">
+    <h4>HumanEval</h4>
+    <p>164 hand-written Python programming problems evaluated with unit tests. Uses Pass@1 metric. Nearly saturated at frontier (90-95%), but remains a useful baseline for small and mid-sized models. Problems are interview-level difficulty.</p>
+    <div class="leader">GPT-5.4 — 94.1% &nbsp;|&nbsp; Kimi K2.6 — ~94.5%</div>
+  </div>
+  <div class="info-card">
+    <h4>MMLU</h4>
+    <p>57-subject multiple-choice benchmark covering STEM, humanities, law, medicine and more. Largely saturated above 88% for frontier models and no longer meaningfully differentiates the top tier. Still useful as a knowledge baseline for smaller models.</p>
+    <div class="leader">Claude Opus 4.6 — 92.1% &nbsp;|&nbsp; GPT-5.5 — ~92%</div>
+  </div>
+  <div class="info-card">
+    <h4>MT-Bench</h4>
+    <p>80 multi-turn conversation questions evaluated by GPT-4 on a 1–10 scale. Tests instruction following, coherence and reasoning across topics like writing, coding, math and roleplay. Scores above 9.0 now indicate top-tier chat capability.</p>
+    <div class="leader">GPT-5.4 — 9.5 &nbsp;|&nbsp; GPT-5.5 — 9.5</div>
+  </div>
+  <div class="info-card">
+    <h4>AIME 2025</h4>
+    <p>All 30 problems from the 2025 American Invitational Mathematics Examination, released after most training cutoffs. Olympiad-level short-answer problems. A single incorrect answer costs ~3.3%, making it a high-resolution math-reasoning signal.</p>
+    <div class="leader">Grok 4 — 100% &nbsp;|&nbsp; GPT-5.2 &amp; o3-pro — 100%</div>
+  </div>
+  <div class="info-card">
+    <h4>GSM8K</h4>
+    <p>8,500 grade-school math word problems requiring multi-step arithmetic. Largely saturated for frontier models at 95%+. Now mainly used as a sanity-check for baseline math reasoning in smaller and fine-tuned models.</p>
+    <div class="leader">o3-pro — 99.1% &nbsp;|&nbsp; GPT-5.4 — 98.1%</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ SELECTION GUIDE ═══════════════════════ -->
+<div class="section-header" style="margin-top:40px;">
+  <h2>🎯 Model Selection Guide</h2>
+  <div class="section-divider"></div>
+</div>
+
+<div class="info-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+  <div class="info-card">
+    <h4>🧬 Scientific Research &amp; Deep Reasoning</h4>
+    <p><strong style="color:var(--accent)">Gemini 3.1 Pro</strong> or <strong style="color:var(--accent)">Claude Opus 4.7</strong> — both score 94%+ on GPQA Diamond. Gemini leads on multimodal science (charts, PDFs, figures); Claude leads on long-form synthesis with 1M context.</p>
+  </div>
+  <div class="info-card">
+    <h4>💻 Software Engineering Agents</h4>
+    <p><strong style="color:var(--accent)">Claude Opus 4.7</strong> leads SWE-bench at 87.6%. <strong style="color:#3fb950">Kimi K2.6</strong> and <strong style="color:#3fb950">GLM-5.1</strong> are the best open-weight alternatives. GPT-5.4 and Grok 4 are close seconds for closed APIs.</p>
+  </div>
+  <div class="info-card">
+    <h4>🔢 Mathematics &amp; Olympiad Problems</h4>
+    <p><strong style="color:var(--accent)">o3-pro</strong> leads MATH-500 at 96.7%. <strong style="color:#3fb950">DeepSeek R1</strong> tops at 97.3% for open-weight. <strong style="color:var(--accent)">Grok 4</strong> achieves 100% on AIME 2025. All three use chain-of-thought reasoning.</p>
+  </div>
+  <div class="info-card">
+    <h4>💲 Best Value / Cost Efficiency</h4>
+    <p><strong style="color:#3fb950">DeepSeek V4</strong> at $0.28/$0.42 per 1M tokens delivers near-frontier quality. <strong style="color:#3fb950">Kimi K2.6</strong> is cheapest in the top-10 GPQA ranking at $0.95/M. Self-hosting <strong style="color:#3fb950">Gemma 4 26B</strong> has zero token costs.</p>
+  </div>
+  <div class="info-card">
+    <h4>🖥️ Local / On-Device Deployment</h4>
+    <p><strong style="color:#3fb950">Gemma 4 26B</strong> runs at 85 t/s on consumer hardware (14 GB RAM). <strong style="color:#3fb950">Phi-4</strong> (14B, MIT) beats models 3× its size on math. <strong style="color:#3fb950">Qwen3 32B</strong> is the best single-GPU balance of quality and speed.</p>
+  </div>
+  <div class="info-card">
+    <h4>📄 Long Document / RAG Workloads</h4>
+    <p><strong style="color:#3fb950">Llama 4 Scout</strong> offers a 10M-token context window — unmatched for RAG over entire codebases or document archives. <strong style="color:var(--accent)">Grok 4</strong> provides 2M tokens for closed-API long-doc tasks.</p>
+  </div>
+  <div class="info-card">
+    <h4>🌐 Multilingual Applications</h4>
+    <p><strong style="color:#3fb950">Qwen3.5</strong> supports 201 languages with Apache 2.0 licensing. <strong style="color:#3fb950">Mistral Large 3</strong> covers 80+ languages and is Europe's strongest open-weight choice for regulated environments.</p>
+  </div>
+  <div class="info-card">
+    <h4>🏢 Enterprise / Compliance</h4>
+    <p>For strict data residency: self-host <strong style="color:#3fb950">DeepSeek R1</strong> (MIT), <strong style="color:#3fb950">Qwen3</strong> (Apache 2.0) or <strong style="color:#3fb950">Mistral Large 3</strong> (Apache 2.0). All allow commercial fine-tuning with no royalties or geographic restrictions.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ SCORE COLOUR KEY ══════════════════════ -->
+<div style="max-width:1300px;margin:32px auto 0;padding:0 24px;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;">
+    <span style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Score Legend</span>
+    <span style="font-size:12px;color:#ffd700;">★ Top score in category (gold)</span>
+    <span style="font-size:12px;color:#3fb950;">● ≥ 75% — High (green)</span>
+    <span style="font-size:12px;color:#d29922;">● 50–74% — Mid (amber)</span>
+    <span style="font-size:12px;color:#8b949e;">● &lt; 50% — Lower (grey)</span>
+    <span style="font-size:12px;color:var(--muted);">— = not publicly reported</span>
+    <span style="font-size:12px;color:var(--muted);">~ = estimated from multiple sources</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ FOOTER ════════════════════════════════ -->
+<footer>
+  <div>
+    <strong>LLM Leaderboard 2026</strong> — Auto-updated weekly by research agent.<br>
+    Scores sourced from official model cards, <a href="https://artificialanalysis.ai">Artificial Analysis</a>,
+    <a href="https://llm-stats.com">LLM Stats</a>, <a href="https://www.vellum.ai/llm-leaderboard">Vellum AI</a>,
+    and third-party evaluations. Some scores estimated (~) from multiple sources.
+  </div>
+  <div style="text-align:right;">
+    Last updated: <strong>May 25, 2026</strong><br>
+    <span style="color:var(--green);">● Live</span> · Models: 20 · Benchmarks: 8
+  </div>
+</footer>
+
+</body>
+</html>
