@@ -1,606 +1,794 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Leaderboard 2026</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Leaderboard — June 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-table-row: #0d1117;
+      --bg-table-row-alt: #111820;
+      --bg-table-header: #1c2333;
+      --border: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent: #00d4ff;
+      --accent-dim: rgba(0, 212, 255, 0.08);
+      --tier-s: #f0c040;
+      --tier-a: #7ee787;
+      --tier-b: #79c0ff;
+      --rank-1: #ffd700;
+      --rank-2: #c0c0c0;
+      --rank-3: #cd7f32;
+      --bar-fill: #00d4ff;
+      --bar-bg: #21262d;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            padding: 40px 20px;
-            min-height: 100vh;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+    /* ── Header ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 32px 40px 28px;
+      background: var(--bg-secondary);
+    }
+    .header-inner { max-width: 1400px; margin: 0 auto; }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+    .header h1 span { color: var(--accent); }
+    .header-meta {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .header-meta code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
 
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.95;
-            margin-bottom: 10px;
-        }
+    /* ── Controls ── */
+    .controls {
+      background: var(--bg-primary);
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .controls-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 16px; width: 100%; flex-wrap: wrap; }
 
-        .update-date {
-            font-size: 0.95em;
-            opacity: 0.85;
-            font-style: italic;
-        }
+    .tab-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
 
-        .content {
-            padding: 40px;
-        }
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      padding: 6px 12px 6px 32px;
+      border-radius: 4px;
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-wrap input::placeholder { color: var(--text-muted); }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      pointer-events: none;
+    }
 
-        .intro {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid #667eea;
-        }
+    .row-count {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
 
-        .intro p {
-            margin-bottom: 10px;
-            line-height: 1.6;
-            color: #555;
-        }
+    /* ── Main ── */
+    .main { max-width: 1400px; margin: 0 auto; padding: 24px 40px 40px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95em;
-        }
+    /* ── Section ── */
+    .section { display: none; }
+    .section.active {
+      display: block;
+      animation: fadeIn 0.18s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
 
-        thead {
-            background: #f0f4ff;
-            border-bottom: 2px solid #667eea;
-            position: sticky;
-            top: 0;
-        }
+    .section-heading {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
 
-        th {
-            padding: 16px;
-            text-align: left;
-            font-weight: 600;
-            color: #667eea;
-            white-space: nowrap;
-        }
+    /* ── Table wrapper (two-layer for sticky-free overflow) ── */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
 
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #e0e0e0;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
 
-        tbody tr:hover {
-            background: #f8f9fa;
-        }
+    thead tr { background: var(--bg-table-header); }
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    thead th:hover { color: var(--text-primary); }
+    thead th.sorted-asc::after { content: ' ▲'; color: var(--accent); }
+    thead th.sorted-desc::after { content: ' ▼'; color: var(--accent); }
 
-        tbody tr:nth-child(even) {
-            background: #fafbfc;
-        }
+    tbody tr {
+      background: var(--bg-table-row);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    tbody tr:nth-child(even) { background: var(--bg-table-row-alt); }
+    tbody tr:hover { background: var(--accent-dim); }
+    tbody tr:last-child { border-bottom: none; }
 
-        .rank {
-            font-weight: 700;
-            color: #667eea;
-            min-width: 40px;
-        }
+    td {
+      padding: 10px 14px;
+      vertical-align: middle;
+    }
 
-        .model-name {
-            font-weight: 600;
-            color: #333;
-        }
+    /* ── Rank cell ── */
+    .rank-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      width: 40px;
+      text-align: center;
+    }
+    .rank-1 { color: var(--rank-1); }
+    .rank-2 { color: var(--rank-2); }
+    .rank-3 { color: var(--rank-3); }
+    .rank-other { color: var(--text-muted); }
 
-        .provider {
-            color: #666;
-            font-size: 0.93em;
-        }
+    /* ── Tier badge ── */
+    .tier-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+    .tier-s { background: rgba(240,192,64,0.12); color: var(--tier-s); border: 1px solid rgba(240,192,64,0.4); }
+    .tier-a { background: rgba(126,231,135,0.10); color: var(--tier-a); border: 1px solid rgba(126,231,135,0.3); }
+    .tier-b { background: rgba(121,192,255,0.10); color: var(--tier-b); border: 1px solid rgba(121,192,255,0.3); }
 
-        .benchmark {
-            text-align: center;
-            font-weight: 500;
-        }
+    /* ── Model cell ── */
+    .model-cell { min-width: 180px; }
+    .model-name { font-weight: 600; color: var(--text-primary); }
+    .model-slug {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .model-arch {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
 
-        .benchmark.high {
-            color: #27ae60;
-        }
+    /* ── Provider cell ── */
+    .provider-text { color: var(--text-secondary); font-size: 0.82rem; }
 
-        .benchmark.mid {
-            color: #f39c12;
-        }
+    /* ── Mono number cells ── */
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      font-size: 0.80rem;
+    }
+    .mono-accent {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+    .dash { color: var(--text-muted); }
 
-        .benchmark.low {
-            color: #e74c3c;
-        }
+    /* ── Score bar cell ── */
+    .score-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 100px;
+    }
+    .score-bar-wrap {
+      height: 5px;
+      background: var(--bar-bg);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .score-bar {
+      height: 100%;
+      background: var(--bar-fill);
+      border-radius: 2px;
+      opacity: 0.75;
+    }
+    .score-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-primary);
+    }
+    .score-val.dim { color: var(--text-muted); }
 
-        .pricing {
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
+    /* ── License badge ── */
+    .license-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .license-mit    { background: #1a2a3a; color: #79c0ff; border: 1px solid rgba(121,192,255,0.25); }
+    .license-apache { background: #1a3a1a; color: #7ee787; border: 1px solid rgba(126,231,135,0.25); }
+    .license-llama  { background: #3a1a1a; color: #ff7b72; border: 1px solid rgba(255,123,114,0.25); }
+    .license-open   { background: #1f1f2a; color: #d2a8ff; border: 1px solid rgba(210,168,255,0.25); }
+    .license-prop   { background: #1f1f1f; color: #8b949e; border: 1px solid rgba(139,148,158,0.25); }
 
-        .pricing.na {
-            color: #95a5a6;
-            font-style: italic;
-        }
+    /* ── Prelim warning ── */
+    .prelim-warn {
+      font-size: 0.68rem;
+      cursor: help;
+      margin-left: 4px;
+      color: #e3a820;
+    }
 
-        .hosting {
-            font-size: 0.9em;
-            color: #555;
-        }
+    /* ── Note chip ── */
+    .note-chip {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
 
-        .capability {
-            font-size: 0.9em;
-            color: #666;
-            line-height: 1.4;
-        }
+    /* ── Benchmark key ── */
+    .benchmark-key {
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .benchmark-key summary {
+      padding: 10px 16px;
+      background: var(--bg-secondary);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      user-select: none;
+      list-style: none;
+    }
+    .benchmark-key summary::-webkit-details-marker { display: none; }
+    .benchmark-key summary::before { content: '▶  '; font-size: 0.65rem; }
+    .benchmark-key[open] summary::before { content: '▼  '; }
+    .benchmark-key summary:hover { color: var(--text-primary); }
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-table-row-alt);
+    }
+    .key-grid div {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .key-grid code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.73rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            margin: 2px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            font-weight: 500;
-        }
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+      padding: 24px 40px;
+      margin-top: 40px;
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sources {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .sources strong { color: var(--text-muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sources a { color: var(--text-secondary); }
+    .sources a:hover { color: var(--accent); }
+    .disclaimer, .updated {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
 
-        .badge-frontier {
-            background: #e8f5e9;
-            color: #27ae60;
-        }
-
-        .badge-reasoning {
-            background: #fff3e0;
-            color: #f39c12;
-        }
-
-        .badge-openweight {
-            background: #f3e5f5;
-            color: #8e44ad;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 20px 40px;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .scroll-hint {
-            text-align: center;
-            color: #999;
-            font-size: 0.85em;
-            margin-top: 20px;
-            font-style: italic;
-        }
-
-        @media (max-width: 1200px) {
-            table {
-                font-size: 0.85em;
-            }
-            th, td {
-                padding: 12px;
-            }
-            .header h1 {
-                font-size: 1.8em;
-            }
-        }
-    </style>
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .header, .controls, .main, footer { padding-left: 16px; padding-right: 16px; }
+      .col-hide-sm { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 LLM Leaderboard 2026</h1>
-            <p>Comprehensive ranking of frontier LLMs and open-weight models</p>
-            <div class="update-date">Last Updated: May 27, 2026</div>
-        </div>
 
-        <div class="content">
-            <div class="intro">
-                <p><strong>Welcome to the LLM Leaderboard 2026</strong> — your resource for tracking the latest large language models across multiple dimensions: benchmark performance, pricing, capabilities, and deployment options.</p>
-                <p>This leaderboard tracks both <span class="badge badge-frontier">frontier hosted models</span> (GPT-4o, Claude, Gemini) and <span class="badge badge-openweight">open-weight models</span> (Llama, Mistral, Qwen, DeepSeek) that achieve state-of-the-art performance. Models are ranked primarily by reasoning and knowledge capabilities (GPQA Diamond, MMLU-Pro) with attention to coding (HumanEval, SWE-Bench) and mathematical reasoning (AIME, MATH).</p>
-            </div>
-
-            <div class="scroll-hint">← Scroll horizontally to see all columns →</div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Model</th>
-                        <th>Provider</th>
-                        <th>Release Date</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>GPQA Diamond</th>
-                        <th>MMLU-Pro</th>
-                        <th>HumanEval</th>
-                        <th>AIME 2025</th>
-                        <th>Input Price<br>($/MTok)</th>
-                        <th>Output Price<br>($/MTok)</th>
-                        <th>Hosting</th>
-                        <th>Capability Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Frontier Reasoning Models -->
-                    <tr>
-                        <td class="rank">1</td>
-                        <td class="model-name">Grok 4.20</td>
-                        <td class="provider">xAI</td>
-                        <td>May 2026</td>
-                        <td><span class="badge badge-reasoning">Reasoning</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">87.5%</td>
-                        <td class="benchmark high">91.0%</td>
-                        <td class="benchmark high">94.2%</td>
-                        <td class="benchmark high">93.3%</td>
-                        <td class="pricing">$2.00</td>
-                        <td class="pricing">$6.00</td>
-                        <td class="hosting">xAI API</td>
-                        <td class="capability">Advanced reasoning, agentic debate, 2M context, multi-agent synthesis, low hallucination</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">2</td>
-                        <td class="model-name">Claude Opus 4.7</td>
-                        <td class="provider">Anthropic</td>
-                        <td>April 2026</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">86.9%</td>
-                        <td class="benchmark high">89.8%</td>
-                        <td class="benchmark high">93.0%</td>
-                        <td class="benchmark high">91.9%</td>
-                        <td class="pricing">$5.00</td>
-                        <td class="pricing">$25.00</td>
-                        <td class="hosting">Anthropic API, AWS Bedrock, Azure AI</td>
-                        <td class="capability">Complex reasoning, code analysis, 1M context, high-res vision, agent workflows</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">3</td>
-                        <td class="model-name">GPT-5.5</td>
-                        <td class="provider">OpenAI</td>
-                        <td>April 2026</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">85.5%</td>
-                        <td class="benchmark high">91.5%</td>
-                        <td class="benchmark high">95.1%</td>
-                        <td class="benchmark high">90.0%</td>
-                        <td class="pricing">$2.00</td>
-                        <td class="pricing">$10.00</td>
-                        <td class="hosting">OpenAI API</td>
-                        <td class="capability">Advanced reasoning, superior coding, 128K context, agentic terminal work, fast output</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">4</td>
-                        <td class="model-name">Gemini 3.1 Pro</td>
-                        <td class="provider">Google DeepMind</td>
-                        <td>February 2026</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">84.0%</td>
-                        <td class="benchmark high">89.0%</td>
-                        <td class="benchmark high">91.0%</td>
-                        <td class="benchmark high">87.5%</td>
-                        <td class="pricing">$2.00</td>
-                        <td class="pricing">$12.00</td>
-                        <td class="hosting">Google AI, Vertex AI</td>
-                        <td class="capability">Native multimodal (text/image/audio/video), 2M context, reasoning focus, grounding via Search</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">5</td>
-                        <td class="model-name">DeepSeek-R1 (0528)</td>
-                        <td class="provider">DeepSeek</td>
-                        <td>May 2025</td>
-                        <td><span class="badge badge-reasoning">Reasoning</span></td>
-                        <td>671B MoE (37B active)</td>
-                        <td class="benchmark high">81.0%</td>
-                        <td class="benchmark high">81.2%</td>
-                        <td class="benchmark high">92.4%</td>
-                        <td class="benchmark high">87.5%</td>
-                        <td class="pricing">$0.55</td>
-                        <td class="pricing">$2.19</td>
-                        <td class="hosting">DeepSeek API, Open-weight (MIT)</td>
-                        <td class="capability">Chain-of-thought reasoning, transparent thinking process, 128K context, open-source variant, cost-effective</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">6</td>
-                        <td class="model-name">Qwen3.6 Max-Plus</td>
-                        <td class="provider">Alibaba</td>
-                        <td>May 2026</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">82.5%</td>
-                        <td class="benchmark high">89.2%</td>
-                        <td class="benchmark high">92.8%</td>
-                        <td class="benchmark high">89.0%</td>
-                        <td class="pricing">$1.50</td>
-                        <td class="pricing">$5.00</td>
-                        <td class="hosting">Qwen API, Cloud partners</td>
-                        <td class="capability">Multimodal, code-specialized, agentic benchmarks, competitive coding performance, terminal-bench leader</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">7</td>
-                        <td class="model-name">Claude Sonnet 4.6</td>
-                        <td class="provider">Anthropic</td>
-                        <td>October 2025</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark high">79.3%</td>
-                        <td class="benchmark high">87.5%</td>
-                        <td class="benchmark high">90.5%</td>
-                        <td class="benchmark mid">85.0%</td>
-                        <td class="pricing">$3.00</td>
-                        <td class="pricing">$15.00</td>
-                        <td class="hosting">Anthropic API, AWS Bedrock, Azure AI</td>
-                        <td class="capability">Balanced intelligence/cost, coding focus, 1M context, extended thinking optional, multi-turn strength</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">8</td>
-                        <td class="model-name">Llama 3.1 405B</td>
-                        <td class="provider">Meta</td>
-                        <td>July 2024</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>405B</td>
-                        <td class="benchmark high">51.1%</td>
-                        <td class="benchmark high">87.3%</td>
-                        <td class="benchmark high">89.0%</td>
-                        <td class="benchmark mid">72.5%</td>
-                        <td class="pricing">$3.00</td>
-                        <td class="pricing">$5.00</td>
-                        <td class="hosting">Together AI, Fireworks, AWS Bedrock, self-hosted</td>
-                        <td class="capability">First open-weight frontier model, 128K context, multilingual, tool use, competitive reasoning, research license</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">9</td>
-                        <td class="model-name">Mistral Large 3</td>
-                        <td class="provider">Mistral</td>
-                        <td>December 2025</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark mid">75.0%</td>
-                        <td class="benchmark high">86.5%</td>
-                        <td class="benchmark high">92.0%</td>
-                        <td class="benchmark mid">82.0%</td>
-                        <td class="pricing">$0.50</td>
-                        <td class="pricing">$1.50</td>
-                        <td class="hosting">Mistral API, Google Vertex AI</td>
-                        <td class="capability">75% price cut vs prior gen, 262K context, multilingual, function calling, enterprise RAG, cost leader</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">10</td>
-                        <td class="model-name">Qwen3-235B-A22B (MoE)</td>
-                        <td class="provider">Alibaba</td>
-                        <td>April 2025</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>235B (22B active)</td>
-                        <td class="benchmark mid">65.8%</td>
-                        <td class="benchmark high">86.2%</td>
-                        <td class="benchmark high">91.5%</td>
-                        <td class="benchmark high">80.4%</td>
-                        <td class="pricing">$0.20</td>
-                        <td class="pricing">$0.60</td>
-                        <td class="hosting">HuggingFace, SiliconFlow, local deployment</td>
-                        <td class="capability">MoE efficiency, thinking mode, non-thinking mode toggle, agentic benchmarks, Apache 2.0 license, competitive reasoning</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">11</td>
-                        <td class="model-name">Mistral Large 2</td>
-                        <td class="provider">Mistral</td>
-                        <td>July 2024</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>123B</td>
-                        <td class="benchmark mid">54.0%</td>
-                        <td class="benchmark high">84.0%</td>
-                        <td class="benchmark high">92.0%</td>
-                        <td class="benchmark mid">71.5%</td>
-                        <td class="pricing">$2.00</td>
-                        <td class="pricing">$6.00</td>
-                        <td class="hosting">Mistral API, self-hosted, HuggingFace</td>
-                        <td class="capability">Strong code generation, 128K context, multilingual support, function calling, instruction-following focus</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">12</td>
-                        <td class="model-name">GPT-4o</td>
-                        <td class="provider">OpenAI</td>
-                        <td>May 2024</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark mid">68.0%</td>
-                        <td class="benchmark high">85.0%</td>
-                        <td class="benchmark high">90.2%</td>
-                        <td class="benchmark mid">76.6%</td>
-                        <td class="pricing">$2.50</td>
-                        <td class="pricing">$10.00</td>
-                        <td class="hosting">OpenAI API</td>
-                        <td class="capability">Multimodal (text/image), 128K context, balanced capabilities, widespread adoption, vision native</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">13</td>
-                        <td class="model-name">Command R+</td>
-                        <td class="provider">Cohere</td>
-                        <td>August 2024</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>104B</td>
-                        <td class="benchmark low">45.0%</td>
-                        <td class="benchmark high">80.0%</td>
-                        <td class="benchmark mid">50.0%</td>
-                        <td class="benchmark low">32.0%</td>
-                        <td class="pricing">$2.50</td>
-                        <td class="pricing">$10.00</td>
-                        <td class="hosting">Cohere API, AWS Bedrock</td>
-                        <td class="capability">RAG optimized, 128K context, long-document recall, enterprise focus, citation inline, retrieval strength</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">14</td>
-                        <td class="model-name">Gemini 2.5 Pro</td>
-                        <td class="provider">Google</td>
-                        <td>June 2025</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark mid">71.2%</td>
-                        <td class="benchmark high">85.5%</td>
-                        <td class="benchmark high">87.0%</td>
-                        <td class="benchmark high">88.0%</td>
-                        <td class="pricing">$1.00</td>
-                        <td class="pricing">$10.00</td>
-                        <td class="hosting">Google AI, Vertex AI, Free tier</td>
-                        <td class="capability">Native multimodal, 1M context, reasoning optimized, grounding, code generation, document analysis</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">15</td>
-                        <td class="model-name">Gemini 2.5 Flash</td>
-                        <td class="provider">Google</td>
-                        <td>June 2025</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark mid">58.0%</td>
-                        <td class="benchmark high">81.0%</td>
-                        <td class="benchmark high">82.0%</td>
-                        <td class="benchmark mid">64.0%</td>
-                        <td class="pricing">$0.30</td>
-                        <td class="pricing">$2.50</td>
-                        <td class="hosting">Google AI, Vertex AI, Free tier</td>
-                        <td class="capability">Speed optimized, multimodal, cost-effective, 1M context, real-time reasoning, grounding via Search free</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">16</td>
-                        <td class="model-name">Claude Haiku 4.5</td>
-                        <td class="provider">Anthropic</td>
-                        <td>March 2026</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark low">62.0%</td>
-                        <td class="benchmark high">83.0%</td>
-                        <td class="benchmark high">85.5%</td>
-                        <td class="benchmark mid">74.0%</td>
-                        <td class="pricing">$1.00</td>
-                        <td class="pricing">$5.00</td>
-                        <td class="hosting">Anthropic API, AWS Bedrock, Azure AI</td>
-                        <td class="capability">Cost-efficient, fast, extended thinking, 1M context, computer use, agent workflows, edge deployment</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">17</td>
-                        <td class="model-name">DeepSeek-V3.1</td>
-                        <td class="provider">DeepSeek</td>
-                        <td>August 2025</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>671B MoE (37B active)</td>
-                        <td class="benchmark mid">78.8%</td>
-                        <td class="benchmark high">89.0%</td>
-                        <td class="benchmark high">91.5%</td>
-                        <td class="benchmark high">85.0%</td>
-                        <td class="pricing">$0.27</td>
-                        <td class="pricing">$1.10</td>
-                        <td class="hosting">DeepSeek API, self-hosted (MIT), HuggingFace</td>
-                        <td class="capability">Hybrid thinking/non-thinking mode, 128K context, agentic workflows, open-source, highly cost-effective</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">18</td>
-                        <td class="model-name">QwQ-32B</td>
-                        <td class="provider">Alibaba</td>
-                        <td>September 2024</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>32B</td>
-                        <td class="benchmark mid">68.3%</td>
-                        <td class="benchmark high">84.5%</td>
-                        <td class="benchmark high">88.5%</td>
-                        <td class="benchmark high">80.3%</td>
-                        <td class="pricing">$0.10</td>
-                        <td class="pricing">$0.30</td>
-                        <td class="hosting">HuggingFace, SiliconFlow, local deployment</td>
-                        <td class="capability">Reasoning specialist, mathematical focus, local inference, compact size, Apache 2.0, competitive with o1-mini</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">19</td>
-                        <td class="model-name">GPT-4o-mini</td>
-                        <td class="provider">OpenAI</td>
-                        <td>July 2024</td>
-                        <td><span class="badge badge-frontier">Frontier</span></td>
-                        <td>–</td>
-                        <td class="benchmark low">54.0%</td>
-                        <td class="benchmark high">80.5%</td>
-                        <td class="benchmark mid">85.2%</td>
-                        <td class="benchmark low">58.0%</td>
-                        <td class="pricing">$0.15</td>
-                        <td class="pricing">$0.60</td>
-                        <td class="hosting">OpenAI API</td>
-                        <td class="capability">Budget option, 128K context, vision capable, fast inference, high-volume applications, edge compatible</td>
-                    </tr>
-
-                    <tr>
-                        <td class="rank">20</td>
-                        <td class="model-name">Mistral Small 3.1</td>
-                        <td class="provider">Mistral</td>
-                        <td>March 2025</td>
-                        <td><span class="badge badge-openweight">Open-weight</span></td>
-                        <td>24B</td>
-                        <td class="benchmark low">38.0%</td>
-                        <td class="benchmark high">78.0%</td>
-                        <td class="benchmark high">84.0%</td>
-                        <td class="benchmark low">48.0%</td>
-                        <td class="pricing">$0.10</td>
-                        <td class="pricing">$0.30</td>
-                        <td class="hosting">Mistral API, HuggingFace, self-hosted</td>
-                        <td class="capability">Lightweight, cost-efficient, 32K context, local deployment, fast inference, production-ready</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="footer">
-            <p><strong>LLM Leaderboard</strong> | Updated weekly with latest benchmarks, pricing, and releases</p>
-            <p>Data sources: Official provider documentation, published benchmarks (GPQA, MMLU-Pro, HumanEval, AIME 2025, SWE-Bench), and independent evaluations.</p>
-            <p>Pricing: USD per million tokens (input / output). N/A indicates open-weight models without API pricing. Prices updated May 27, 2026.</p>
-            <p>© 2026 LLM Research & Publishing | <a href="https://github.com/leaderboard-repo" style="color: #667eea;">GitHub</a></p>
-        </div>
+<div class="header">
+  <div class="header-inner">
+    <h1>LLM Leaderboard <span>— June 2026</span></h1>
+    <div class="header-meta">
+      <span>Frontier &amp; open-weight model rankings by benchmark performance</span>
+      <code>arena.ai · llm-stats.com · benchlm.ai · artificialanalysis.ai</code>
     </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="controls-inner">
+    <button class="tab-btn active" onclick="switchTab('frontier')">🏆 Frontier (10)</button>
+    <button class="tab-btn" onclick="switchTab('open')">🔓 Open-Weight (10)</button>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search model or provider…" oninput="filterRows()">
+    </div>
+    <span class="row-count" id="rowCount"></span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ═══════════════════ FRONTIER TABLE ═══════════════════ -->
+  <div class="section active" id="section-frontier">
+    <div class="section-heading">Top 10 Frontier / Proprietary Models</div>
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table id="frontier-table">
+          <thead>
+            <tr>
+              <th onclick="sortTable('frontier','rank')">#</th>
+              <th onclick="sortTable('frontier','tier')">Tier</th>
+              <th onclick="sortTable('frontier','name')">Model</th>
+              <th onclick="sortTable('frontier','provider')">Provider</th>
+              <th onclick="sortTable('frontier','released')" class="col-hide-sm">Released</th>
+              <th onclick="sortTable('frontier','context')">Context</th>
+              <th onclick="sortTable('frontier','priceIn')">In $/M</th>
+              <th onclick="sortTable('frontier','priceOut')">Out $/M</th>
+              <th onclick="sortTable('frontier','gpqa')">GPQA ◆</th>
+              <th onclick="sortTable('frontier','swe')">SWE-Bench</th>
+              <th onclick="sortTable('frontier','elo')">Arena Elo</th>
+            </tr>
+          </thead>
+          <tbody id="frontier-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ OPEN-WEIGHT TABLE ═══════════════════ -->
+  <div class="section" id="section-open">
+    <div class="section-heading">Top 10 Open-Weight / Open-Source Models</div>
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table id="open-table">
+          <thead>
+            <tr>
+              <th onclick="sortTable('open','rank')">#</th>
+              <th onclick="sortTable('open','tier')">Tier</th>
+              <th onclick="sortTable('open','name')">Model</th>
+              <th onclick="sortTable('open','provider')">Provider</th>
+              <th onclick="sortTable('open','license')">License</th>
+              <th onclick="sortTable('open','released')" class="col-hide-sm">Released</th>
+              <th onclick="sortTable('open','size')">Size</th>
+              <th onclick="sortTable('open','context')">Context</th>
+              <th onclick="sortTable('open','apiPriceIn')">API $/M in</th>
+              <th onclick="sortTable('open','selfHost')">Self-host</th>
+              <th onclick="sortTable('open','gpqa')">GPQA ◆</th>
+              <th onclick="sortTable('open','swe')">SWE-Bench</th>
+              <th onclick="sortTable('open','elo')">Arena Elo</th>
+            </tr>
+          </thead>
+          <tbody id="open-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ BENCHMARK KEY ═══════════════════ -->
+  <details class="benchmark-key">
+    <summary>Benchmark Key</summary>
+    <div class="key-grid">
+      <div><code>GPQA ◆</code> Graduate-level science Q&amp;A (Diamond set) — biology, chemistry, physics. Most discriminating frontier benchmark in 2026. Scale: 0–100%.</div>
+      <div><code>SWE-Bench</code> Real GitHub issue resolution (Verified subset, 500 tasks). Primary coding signal. HumanEval is deprecated — prefer this.</div>
+      <div><code>Arena Elo</code> Human-preference ranking from arena.ai (~6.7M votes). Side-by-side blind comparisons. Higher = better.</div>
+      <div><code>GPQA saturation</code> Not yet saturated. Frontier models cluster 88–95%. Good discriminator for 2026.</div>
+      <div><code>MMLU-Pro</code> General knowledge (not shown — approaching saturation at 90%+ cluster at frontier).</div>
+      <div><code>⚠ Preliminary</code> Arena Elo with fewer than ~20K votes — confidence interval is wider; rank may shift as votes accumulate.</div>
+    </div>
+  </details>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="sources">
+      <strong>Sources</strong>
+      <a href="https://arena.ai/leaderboard/text" target="_blank">Arena.ai</a> ·
+      <a href="https://llm-stats.com/" target="_blank">LLM Stats</a> ·
+      <a href="https://benchlm.ai/" target="_blank">BenchLM</a> ·
+      <a href="https://artificialanalysis.ai/" target="_blank">Artificial Analysis</a> ·
+      <a href="https://openrouter.ai/rankings" target="_blank">OpenRouter</a>
+    </div>
+    <p class="disclaimer">Benchmarks change rapidly. Scores reflect publicly reported values at time of publication. Cross-reference multiple sources before making infrastructure decisions. "—" indicates data not publicly available.</p>
+    <p class="updated">Last updated: June 7, 2026</p>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+
+const FRONTIER = [
+  { rank:1,  tier:'S', name:'Claude Opus 4.6', slug:'claude-opus-4-6', arch:'Dense · Thinking', provider:'Anthropic', released:'Mar 2026', contextK:1000,  context:'1M',   priceIn:5.00,  priceOut:25.00, gpqa:null, swe:80.8, elo:1504, eloVotes:39015, eloPrelim:false },
+  { rank:2,  tier:'S', name:'Claude Opus 4.7', slug:'claude-opus-4-7', arch:'Dense · Thinking', provider:'Anthropic', released:'Apr 2026', contextK:1000,  context:'1M',   priceIn:5.00,  priceOut:25.00, gpqa:94.2, swe:null, elo:1501, eloVotes:25000, eloPrelim:false },
+  { rank:3,  tier:'S', name:'Meta Muse Spark', slug:'muse-spark',       arch:'Dense · Multimodal', provider:'Meta',      released:'Apr 2026', contextK:1000,  context:'1M',   priceIn:null,  priceOut:null,  gpqa:89.5, swe:77.4, elo:1489, eloVotes:13026, eloPrelim:true  },
+  { rank:4,  tier:'A', name:'Gemini 3.1 Pro',  slug:'gemini-3.1-pro',  arch:'Dense · Thinking', provider:'Google',    released:'Feb 2026', contextK:1000,  context:'1M',   priceIn:2.00,  priceOut:12.00, gpqa:94.3, swe:80.6, elo:1488, eloVotes:50137, eloPrelim:false },
+  { rank:5,  tier:'A', name:'Gemini 3 Pro',    slug:'gemini-3-pro',    arch:'Dense',             provider:'Google',    released:'Jan 2026', contextK:1000,  context:'1M',   priceIn:2.00,  priceOut:12.00, gpqa:null, swe:76.2, elo:1486, eloVotes:41317, eloPrelim:false },
+  { rank:6,  tier:'A', name:'Claude Opus 4.8', slug:'claude-opus-4-8', arch:'Dense · Thinking', provider:'Anthropic', released:'May 2026', contextK:1000,  context:'1M',   priceIn:5.00,  priceOut:25.00, gpqa:93.6, swe:88.6, elo:1482, eloVotes:5911,  eloPrelim:true  },
+  { rank:7,  tier:'A', name:'GPT-5.5',          slug:'gpt-5.5',         arch:'Dense',             provider:'OpenAI',   released:'Apr 2026', contextK:1100,  context:'1.1M', priceIn:5.00,  priceOut:30.00, gpqa:93.6, swe:88.7, elo:1482, eloVotes:20950, eloPrelim:false },
+  { rank:8,  tier:'B', name:'GPT-5.4',          slug:'gpt-5.4',         arch:'Dense',             provider:'OpenAI',   released:'Mar 2026', contextK:1100,  context:'1.1M', priceIn:2.50,  priceOut:15.00, gpqa:94.4, swe:null, elo:1479, eloVotes:33154, eloPrelim:false },
+  { rank:9,  tier:'B', name:'Gemini 3.5 Flash', slug:'gemini-3.5-flash',arch:'Dense',             provider:'Google',   released:'May 2026', contextK:1000,  context:'1M',   priceIn:1.50,  priceOut:9.00,  gpqa:null, swe:null, elo:1477, eloVotes:9715,  eloPrelim:true  },
+  { rank:10, tier:'B', name:'Grok 4',            slug:'grok-4.20',       arch:'Dense · Thinking', provider:'xAI',      released:'Mar 2026', contextK:2000,  context:'2M',   priceIn:2.00,  priceOut:6.00,  gpqa:88.9, swe:74.9, elo:1474, eloVotes:25895, eloPrelim:false },
+];
+
+const OPEN = [
+  { rank:1,  tier:'S', name:'DeepSeek V4 Pro',   slug:'deepseek-v4-pro',    arch:'MoE',             provider:'DeepSeek',      license:'MIT',            sizeTotal:'1.6T', sizeActive:'49B',  released:'Apr 2026', context:'1M',   apiPriceIn:1.74, selfHost:'2× RTX 4090', gpqa:90.1, swe:80.6, elo:null,  note:'' },
+  { rank:2,  tier:'S', name:'Kimi K2.6',          slug:'kimi-k2.6',           arch:'MoE',             provider:'Moonshot AI',   license:'MIT',            sizeTotal:'1T',   sizeActive:'32B',  released:'Apr 2026', context:'256K', apiPriceIn:0.95, selfHost:'2× RTX 4090', gpqa:90.5, swe:null, elo:null,  note:'' },
+  { rank:3,  tier:'S', name:'GLM-5.1',             slug:'glm-5.1',             arch:'Dense',           provider:'Z.AI (Zhipu)',  license:'Open',           sizeTotal:'—',    sizeActive:'—',    released:'Apr 2026', context:'203K', apiPriceIn:1.40, selfHost:'—',           gpqa:86.2, swe:null, elo:1475,  note:'SWE-Pro 58.4%' },
+  { rank:4,  tier:'A', name:'GLM-5 Reasoning',    slug:'glm-5-reasoning',     arch:'Dense · Thinking',provider:'Z.AI (Zhipu)',  license:'Open',           sizeTotal:'—',    sizeActive:'—',    released:'Feb 2026', context:'200K', apiPriceIn:1.00, selfHost:'—',           gpqa:94.0, swe:null, elo:null,  note:'Leads GPQA open-weight' },
+  { rank:5,  tier:'A', name:'Qwen3.5 397B',        slug:'qwen3.5-397b-a17b',   arch:'MoE · Thinking',  provider:'Alibaba / Qwen',license:'Apache 2.0',     sizeTotal:'397B', sizeActive:'17B',  released:'Mar 2026', context:'128K', apiPriceIn:0.60, selfHost:'1× RTX 4090', gpqa:88.4, swe:73.4, elo:null,  note:'AIME 2026: 91.3%' },
+  { rank:6,  tier:'A', name:'MiniMax M3',           slug:'minimax-m3',          arch:'MoE · Multimodal',provider:'MiniMax',       license:'MIT',            sizeTotal:'—',    sizeActive:'—',    released:'Jun 2026', context:'1M',   apiPriceIn:null, selfHost:'—',           gpqa:null, swe:null, elo:null,  note:'SWE-Pro 59%; 1M ctx + multimodal' },
+  { rank:7,  tier:'A', name:'Qwen3.6 Max',          slug:'qwen3.6-max',         arch:'MoE',             provider:'Alibaba / Qwen',license:'Apache 2.0',     sizeTotal:'—',    sizeActive:'—',    released:'Apr 2026', context:'1M',   apiPriceIn:0.80, selfHost:'2× RTX 4090', gpqa:null, swe:null, elo:null,  note:'Competitive with Kimi K2.6' },
+  { rank:8,  tier:'B', name:'Qwen 3 235B',          slug:'qwen3-235b-a22b',     arch:'MoE',             provider:'Alibaba / Qwen',license:'Apache 2.0',     sizeTotal:'235B', sizeActive:'22B',  released:'Feb 2026', context:'128K', apiPriceIn:0.40, selfHost:'2× RTX 4090', gpqa:null, swe:null, elo:null,  note:'' },
+  { rank:9,  tier:'B', name:'Llama 4 Scout',        slug:'llama-4-scout',       arch:'MoE',             provider:'Meta',          license:'Llama Community',sizeTotal:'—',    sizeActive:'—',    released:'Feb 2026', context:'10M',  apiPriceIn:0.17, selfHost:'2× RTX 4090', gpqa:null, swe:null, elo:null,  note:'10M context window' },
+  { rank:10, tier:'B', name:'DeepSeek V4 Flash',    slug:'deepseek-v4-flash',   arch:'MoE',             provider:'DeepSeek',      license:'MIT',            sizeTotal:'284B', sizeActive:'13B',  released:'Apr 2026', context:'1M',   apiPriceIn:0.27, selfHost:'1× RTX 4090', gpqa:null, swe:null, elo:null,  note:'Efficient variant' },
+];
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+
+function maxOf(arr, key) {
+  const vals = arr.map(r => r[key]).filter(v => v !== null && v !== undefined);
+  return vals.length ? Math.max(...vals) : 1;
+}
+
+function fmt(val, decimals=1, suffix='%') {
+  if (val === null || val === undefined) return '<span class="dash">—</span>';
+  return `<span class="mono-accent">${val.toFixed(decimals)}${suffix}</span>`;
+}
+
+function fmtPrice(val) {
+  if (val === null || val === undefined) return '<span class="dash">N/A</span>';
+  return `<span class="mono">$${val.toFixed(2)}</span>`;
+}
+
+function scoreCell(val, maxVal) {
+  if (val === null || val === undefined) return '<span class="dash">—</span>';
+  const pct = ((val / maxVal) * 100).toFixed(1);
+  return `<div class="score-cell">
+    <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
+    <span class="score-val">${val.toFixed(1)}%</span>
+  </div>`;
+}
+
+function eloCell(val, maxVal, preliminary) {
+  if (val === null || val === undefined) return '<span class="dash">—</span>';
+  const pct = ((val / maxVal) * 100).toFixed(1);
+  const warn = preliminary ? '<abbr class="prelim-warn" title="Preliminary — fewer than 20K votes, confidence interval wider">⚠</abbr>' : '';
+  return `<div class="score-cell">
+    <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
+    <span class="score-val">${val}${warn}</span>
+  </div>`;
+}
+
+function tierBadge(t) {
+  return `<span class="tier-badge tier-${t.toLowerCase()}">${t}</span>`;
+}
+
+function rankCell(r) {
+  const cls = r <= 3 ? `rank-${r}` : 'rank-other';
+  const sym = r === 1 ? '⬡ 1' : r === 2 ? '⬡ 2' : r === 3 ? '⬡ 3' : `${r}`;
+  return `<td class="rank-cell ${cls}">${sym}</td>`;
+}
+
+function licenseBadge(l) {
+  if (!l) return '<span class="dash">—</span>';
+  const lc = l.toLowerCase();
+  let cls = 'license-open';
+  if (lc === 'mit') cls = 'license-mit';
+  else if (lc.includes('apache')) cls = 'license-apache';
+  else if (lc.includes('llama')) cls = 'license-llama';
+  else if (lc === 'proprietary') cls = 'license-prop';
+  return `<span class="license-badge ${cls}">${l}</span>`;
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+
+function renderFrontier(data) {
+  const maxGpqa = maxOf(data, 'gpqa');
+  const maxSwe  = maxOf(data, 'swe');
+  const maxElo  = maxOf(data, 'elo');
+
+  return data.map(r => `
+    <tr data-name="${r.name.toLowerCase()}" data-provider="${r.provider.toLowerCase()}">
+      ${rankCell(r.rank)}
+      <td>${tierBadge(r.tier)}</td>
+      <td class="model-cell">
+        <div class="model-name">${r.name}</div>
+        <div class="model-slug">${r.slug}</div>
+        <div class="model-arch">${r.arch}</div>
+      </td>
+      <td><span class="provider-text">${r.provider}</span></td>
+      <td class="mono col-hide-sm">${r.released}</td>
+      <td class="mono">${r.context}</td>
+      <td>${fmtPrice(r.priceIn)}</td>
+      <td>${fmtPrice(r.priceOut)}</td>
+      <td>${scoreCell(r.gpqa, maxGpqa)}</td>
+      <td>${scoreCell(r.swe, maxSwe)}</td>
+      <td>${eloCell(r.elo, maxElo, r.eloPrelim)}</td>
+    </tr>`).join('');
+}
+
+function renderOpen(data) {
+  const maxGpqa = maxOf(data, 'gpqa');
+  const maxSwe  = maxOf(data, 'swe');
+  const maxElo  = maxOf(data, 'elo');
+
+  return data.map(r => {
+    const size = r.sizeTotal === '—' ? '<span class="dash">—</span>' :
+      `<span class="mono">${r.sizeTotal}</span><span class="mono" style="color:var(--text-muted);font-size:0.72rem"> / ${r.sizeActive}</span>`;
+
+    const apiPrice = r.apiPriceIn !== null
+      ? `<span class="mono">$${r.apiPriceIn.toFixed(2)}</span>`
+      : '<span class="dash">—</span>';
+
+    const selfHost = r.selfHost === '—'
+      ? '<span class="dash">—</span>'
+      : `<span class="mono" style="font-size:0.75rem">${r.selfHost}</span>`;
+
+    const eloVal = r.elo !== null
+      ? eloCell(r.elo, Math.max(maxElo || 1475, 1475), false)
+      : '<span class="dash">—</span>';
+
+    const noteHtml = r.note
+      ? `<div class="note-chip">${r.note}</div>`
+      : '';
+
+    return `
+    <tr data-name="${r.name.toLowerCase()}" data-provider="${r.provider.toLowerCase()}">
+      ${rankCell(r.rank)}
+      <td>${tierBadge(r.tier)}</td>
+      <td class="model-cell">
+        <div class="model-name">${r.name}</div>
+        <div class="model-slug">${r.slug}</div>
+        <div class="model-arch">${r.arch}</div>
+        ${noteHtml}
+      </td>
+      <td><span class="provider-text">${r.provider}</span></td>
+      <td>${licenseBadge(r.license)}</td>
+      <td class="mono col-hide-sm">${r.released}</td>
+      <td>${size}</td>
+      <td class="mono">${r.context}</td>
+      <td>${apiPrice}</td>
+      <td>${selfHost}</td>
+      <td>${scoreCell(r.gpqa, maxGpqa)}</td>
+      <td>${scoreCell(r.swe, maxSwe)}</td>
+      <td>${eloVal}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  SORT STATE
+// ═══════════════════════════════════════════════════
+
+const sortState = {
+  frontier: { col: 'rank', dir: 'asc' },
+  open:     { col: 'rank', dir: 'asc' },
+};
+
+function sortData(arr, col, dir) {
+  return [...arr].sort((a, b) => {
+    let va = a[col], vb = b[col];
+    if (va === null || va === undefined) va = dir === 'asc' ? Infinity : -Infinity;
+    if (vb === null || vb === undefined) vb = dir === 'asc' ? Infinity : -Infinity;
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return dir === 'asc' ? -1 : 1;
+    if (va > vb) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function sortTable(tbl, col) {
+  const state = sortState[tbl];
+  if (state.col === col) {
+    state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.col = col;
+    state.dir = 'asc';
+  }
+  refreshTable(tbl);
+  updateSortIndicators(tbl);
+}
+
+function updateSortIndicators(tbl) {
+  const tableId = tbl === 'frontier' ? 'frontier-table' : 'open-table';
+  const table = document.getElementById(tableId);
+  table.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+  // Find the clicked th by its onclick attribute matching the col
+  const state = sortState[tbl];
+  const ths = table.querySelectorAll('thead th');
+  ths.forEach(th => {
+    if (th.getAttribute('onclick') && th.getAttribute('onclick').includes(`'${state.col}'`)) {
+      th.classList.add(state.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  FILTER
+// ═══════════════════════════════════════════════════
+
+function filterRows() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const tbl = currentTab === 'frontier' ? 'frontier-tbody' : 'open-tbody';
+  const rows = document.getElementById(tbl).querySelectorAll('tr');
+  let visible = 0;
+  rows.forEach(row => {
+    const name = row.getAttribute('data-name') || '';
+    const prov = row.getAttribute('data-provider') || '';
+    const match = !q || name.includes(q) || prov.includes(q);
+    row.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('rowCount').textContent = q ? `${visible} of ${rows.length} shown` : `${rows.length} models`;
+}
+
+// ═══════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════
+
+let currentTab = 'frontier';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`section-${tab}`).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('searchInput').value = '';
+  refreshTable(tab);
+  updateSortIndicators(tab);
+}
+
+function refreshTable(tab) {
+  const state = sortState[tab];
+  if (tab === 'frontier') {
+    const sorted = sortData(FRONTIER, state.col, state.dir);
+    document.getElementById('frontier-tbody').innerHTML = renderFrontier(sorted);
+    document.getElementById('rowCount').textContent = `${sorted.length} models`;
+  } else {
+    const sorted = sortData(OPEN, state.col, state.dir);
+    document.getElementById('open-tbody').innerHTML = renderOpen(sorted);
+    document.getElementById('rowCount').textContent = `${sorted.length} models`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+
+refreshTable('frontier');
+refreshTable('open');
+updateSortIndicators('frontier');
+document.getElementById('rowCount').textContent = `${FRONTIER.length} models`;
+
+</script>
 </body>
 </html>
