@@ -31,23 +31,23 @@ Ranked by BenchLM composite score (primary) and GPQA Diamond (tiebreaker). API p
 
 | Rank | Model | Provider | License | Released | Size (Total / Active) | Context | API $/M in | Self-host | GPQA ◆ | SWE-Bench | Arena Elo |
 |------|-------|----------|---------|----------|-----------------------|---------|-----------|-----------|--------|-----------|-----------|
-| 1 | DeepSeek V4 Pro | DeepSeek | MIT | Apr 2026 | 1.6T / 49B | 1M | $1.74 | 2× RTX 4090 | 90.1% | 80.6% | — |
-| 2 | Kimi K2.6 | Moonshot AI | MIT | Apr 2026 | 1T / 32B | 256K | $0.95 | 2× RTX 4090 | 90.5% | — | — |
+| 1 | DeepSeek V4 Pro | DeepSeek | MIT | Apr 2026 | 1.6T / 49B | 1M | $1.74 | 8× H200 | 90.1% | 80.6% | — |
+| 2 | Kimi K2.6 | Moonshot AI | MIT | Apr 2026 | 1T / 32B | 256K | $0.95 | 8× H100 | 90.5% | — | — |
 | 3 | GLM-5.1 | Z.AI (Zhipu) | Open | Apr 2026 | — | 203K | $1.40 | — | 86.2% | — | 1475 |
 | 4 | GLM-5 Reasoning | Z.AI (Zhipu) | Open | Feb 2026 | — | 200K | $1.00 | — | 94.0% | — | — |
-| 5 | Qwen3.5 397B | Alibaba / Qwen | Apache 2.0 | Mar 2026 | 397B / 17B | 128K | $0.60 | 1× RTX 4090 | 88.4% | 73.4% | — |
+| 5 | Qwen3.5 397B | Alibaba / Qwen | Apache 2.0 | Mar 2026 | 397B / 17B | 128K | $0.60 | 4× H100 | 88.4% | 73.4% | — |
 | 6 | MiniMax M3 | MiniMax | MIT | Jun 2026 | — | 1M | — | — | — | — | — |
-| 7 | Qwen3.6 Max | Alibaba / Qwen | Apache 2.0 | Apr 2026 | — | 1M | $0.80 | 2× RTX 4090 | — | — | — |
-| 8 | Qwen 3 235B | Alibaba / Qwen | Apache 2.0 | Feb 2026 | 235B / 22B | 128K | $0.40 | 2× RTX 4090 | — | — | — |
-| 9 | Llama 4 Scout | Meta | Llama Community | Feb 2026 | — | 10M | $0.17 | 2× RTX 4090 | — | — | — |
-| 10 | DeepSeek V4 Flash | DeepSeek | MIT | Apr 2026 | 284B / 13B | 1M | $0.27 | 1× RTX 4090 | — | — | — |
+| 7 | Qwen3.6 Max | Alibaba / Qwen | Apache 2.0 | Apr 2026 | — | 1M | $0.80 | — | — | — | — |
+| 8 | Qwen 3 235B | Alibaba / Qwen | Apache 2.0 | Feb 2026 | 235B / 22B | 128K | $0.40 | 2× H100 | — | — | — |
+| 9 | Llama 4 Scout | Meta | Llama Community | Feb 2026 | — | 10M | $0.17 | — | — | — | — |
+| 10 | DeepSeek V4 Flash | DeepSeek | MIT | Apr 2026 | 284B / 13B | 1M | $0.27 | 2× H100 | — | — | — |
 
 **Notes:**
 - MiniMax M3 (Jun 2026): SWE-Bench Pro 59%; first open-weight model combining 1M context + frontier coding + native multimodality
 - GLM-5.1: SWE-Bench Pro 58.4% (agentic coding); GLM-5 Reasoning leads GPQA at 94.0% among open-weight models
 - Qwen3.5 397B: AIME 2026 91.3%; strong math reasoning
 - Llama 4 Scout: 10M token context window, designed for speed-critical agentic pipelines
-- Self-host tiers are based on active params (MoE models need far less VRAM than total params suggest)
+- Self-host tiers are based on **total** params at Q4 quantization (~0.5 bytes/param). MoE models require all expert weights resident in VRAM simultaneously — the router can call any expert at any token, so active-param count is not the right basis for VRAM estimation. H100 = 80 GB, H200 = 141 GB.
 
 ---
 
